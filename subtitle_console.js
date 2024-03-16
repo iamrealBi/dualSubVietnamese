@@ -5,28 +5,61 @@ async function translateToVietnamese(text) {
 }
 
 let previousContent = '';
+let observer = null;
 
 function getTargetElement() {
     return document.querySelector('div.vjs-text-track-display > div > div > div');
 }
 
-async function printContent() {
-    const targetElement = getTargetElement();
-    if (targetElement) {
-        const currentContent = targetElement.textContent.replace(/\n/g, '');
-        if (currentContent !== previousContent) {
-            console.clear();
-            try {
-                const translatedContent = await translateToVietnamese(currentContent);
-                console.log(translatedContent);
-                previousContent = currentContent;
-            } catch (error) {
-                console.error('Lỗi khi dịch:', error);
+async function processContent(mutations) {
+    for (const mutation of mutations) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+            const targetElement = getTargetElement();
+            if (targetElement) {
+                const currentContent = targetElement.textContent.replace(/\n/g, '');
+                if (currentContent !== previousContent) {
+                    try {
+                        const translatedContent = await translateToVietnamese(currentContent);
+                        console.clear();
+                        console.log(translatedContent);
+                        previousContent = currentContent;
+                    } catch (error) {
+                        console.error('Lỗi khi dịch:', error);
+                    }
+                }
+            } else {
+                console.log('Waiting for subtitle...');
             }
+            break;
+        } else if (mutation.type === 'characterData') {
+            const targetElement = getTargetElement();
+            if (targetElement) {
+                const currentContent = targetElement.textContent.replace(/\n/g, '');
+                if (currentContent !== previousContent) {
+                    try {
+                        const translatedContent = await translateToVietnamese(currentContent);
+                        console.clear();
+                        console.log(translatedContent);
+                        previousContent = currentContent;
+                    } catch (error) {
+                        console.error('Lỗi khi dịch:', error);
+                    }
+                }
+            } else {
+                console.log('Waiting for subtitle...');
+            }
+            break;
         }
-    } else {
-        console.log('Waiting for subtitle...');
     }
 }
 
-setInterval(printContent, 200);
+observer = new MutationObserver(processContent);
+
+const observerConfig = {
+    childList: true,
+    subtree: true,
+    characterData: true,
+    characterDataOldValue: true
+};
+
+observer.observe(document.body, observerConfig);

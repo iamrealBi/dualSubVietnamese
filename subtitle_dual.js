@@ -25,12 +25,12 @@ async function createDualSub() {
             }
             dualSub = document.createElement('div');
             dualSub.style.position = 'absolute';
-            dualSub.style.zIndex = '999'; // Đảm bảo dualSub có zIndex thấp hơn targetElement
+            dualSub.style.zIndex = '999'; 
             dualSub.style.color = 'yellow';
             dualSub.style.textShadow = '2px 2px 4px #000000';
             dualSub.style.textAlign = 'center';
             dualSub.style.width = '100%';
-            dualSub.style.top = '90%'; // Dịch chuyển lên trên một chút
+            dualSub.style.top = '90%';
             dualSub.style.left = '0';
             dualSub.textContent = translatedContent;
 
